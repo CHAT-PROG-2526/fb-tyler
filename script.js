@@ -30,6 +30,13 @@ const CHARACTERS = [
   { id: 'dog', name: 'Dog', colors: { body: '#a29bfe', head: '#a29bfe', wing: '#8e7aff', tail: '#6c5ce7', beak: '#fd79a8' } },
   { id: 'frog', name: 'Frog', colors: { body: '#00b894', head: '#00b894', wing: '#00a383', tail: '#00856d', beak: '#55efc4' } },
   { id: 'bat', name: 'Bat', colors: { body: '#636e72', head: '#636e72', wing: '#2d3436', tail: '#1e272e', beak: '#d63031' } },
+  { id: 'penguin', name: 'Penguin', colors: { body: '#2d3436', head: '#2d3436', wing: '#636e72', tail: '#000', beak: '#fdcb6e' } },
+  { id: 'parrot', name: 'Parrot', colors: { body: '#e17055', head: '#e17055', wing: '#00b894', tail: '#fdcb6e', beak: '#fff' } },
+  { id: 'owl', name: 'Owl', colors: { body: '#a0522d', head: '#a0522d', wing: '#8b4513', tail: '#654321', beak: '#ffa500' } },
+  { id: 'eagle', name: 'Eagle', colors: { body: '#4a3728', head: '#fff', wing: '#4a3728', tail: '#2c1810', beak: '#f39c12' } },
+  { id: 'bluebird', name: 'Bluebird', colors: { body: '#3498db', head: '#3498db', wing: '#2980b9', tail: '#1abc9c', beak: '#2c3e50' } },
+  { id: 'cardinal', name: 'Cardinal', colors: { body: '#c0392b', head: '#c0392b', wing: '#922b21', tail: '#7b241c', beak: '#d35400' } },
+  { id: 'goldfinch', name: 'Goldfinch', colors: { body: '#f1c40f', head: '#f1c40f', wing: '#f39c12', tail: '#f1c40f', beak: '#7f8c8d' } },
 ];
 
 const CHARACTER_KEY = 'flappyCharacter';
