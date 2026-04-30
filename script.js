@@ -17,7 +17,7 @@ const PIPE_WIDTH = 56;
 const PIPE_GAP = 120;const PIPE_HOLE_SPACING = 100;const PIPE_SPACING = 150;
 const PIPE_SPEED_BASE = 2.2;
 const SPEED_INCREMENT = 0.12;
-const GRAVITY = 0.3;
+const GRAVITY = 0.35;
 const FLAP_VELOCITY = -7.0;
 const MAX_DROP_SPEED = 12;
 const STORAGE_KEY = 'flappyLeaderboard';
