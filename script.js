@@ -24,6 +24,16 @@ const STORAGE_KEY = 'flappyLeaderboard';
 const MUTE_KEY = 'flappyMute';
 const APP_VERSION = '1.0.0';
 
+const CHARACTERS = [
+  { id: 'bird', name: 'Bird', colors: { body: '#f5d84f', head: '#f5d84f', wing: '#e8c23f', tail: '#d4a835', beak: '#ffb042' } },
+  { id: 'cat', name: 'Cat', colors: { body: '#ff9f43', head: '#ff9f43', wing: '#e67e22', tail: '#d35400', beak: '#ffeaa7' } },
+  { id: 'dog', name: 'Dog', colors: { body: '#a29bfe', head: '#a29bfe', wing: '#8e7aff', tail: '#6c5ce7', beak: '#fd79a8' } },
+  { id: 'frog', name: 'Frog', colors: { body: '#00b894', head: '#00b894', wing: '#00a383', tail: '#00856d', beak: '#55efc4' } },
+  { id: 'bat', name: 'Bat', colors: { body: '#636e72', head: '#636e72', wing: '#2d3436', tail: '#1e272e', beak: '#d63031' } },
+];
+
+const CHARACTER_KEY = 'flappyCharacter';
+
 const gameState = {
   TITLE: 'TITLE',
   READY: 'READY',
@@ -42,6 +52,7 @@ let speed = PIPE_SPEED_BASE;
 let distanceSinceLastPipe = 0;
 let explosionParticles = [];
 let isMuted = false;
+let selectedCharacter = CHARACTERS[0];
 let musicNode = null;
 let audioContext = null;
 let audioInitialized = false;
@@ -81,6 +92,15 @@ function loadStorage() {
   } catch (error) {
     isMuted = false;
   }
+  try {
+    const charRaw = window.localStorage.getItem(CHARACTER_KEY);
+    if (charRaw) {
+      const found = CHARACTERS.find(c => c.id === charRaw);
+      if (found) selectedCharacter = found;
+    }
+  } catch (error) {
+    // use default
+  }
   updateMuteButton();
 }
 
@@ -92,6 +112,11 @@ function saveStorage() {
   }
   try {
     window.localStorage.setItem(MUTE_KEY, String(isMuted));
+  } catch (error) {
+    // ignore storage errors
+  }
+  try {
+    window.localStorage.setItem(CHARACTER_KEY, selectedCharacter.id);
   } catch (error) {
     // ignore storage errors
   }
@@ -120,6 +145,42 @@ function renderLeaderboard() {
     return `<li>${index + 1}. ${entry.score} - ${formatDate(entry.date)}</li>`;
   });
   leaderboardPanel.innerHTML = `<h2>Top Scores</h2><ul>${rows.join('')}</ul>`;
+}
+
+function renderCharacterSelector() {
+  const chars = CHARACTERS.map(c => {
+    const isSelected = c.id === selectedCharacter.id;
+    return `<button class="char-btn ${isSelected ? 'selected' : ''}" data-id="${c.id}" style="background:${c.colors.body}">${c.name[0]}</button>`;
+  }).join('');
+  return `<div id="charSelector"><h3>Choose Character</h3><div class="char-grid">${chars}</div></div>`;
+}
+
+function selectCharacter(id) {
+  const found = CHARACTERS.find(c => c.id === id);
+  if (found) {
+    selectedCharacter = found;
+    saveStorage();
+    renderCharacterButtons();
+  }
+}
+
+function renderCharacterButtons() {
+  const container = document.getElementById('charSelector');
+  if (!container) return;
+  const btns = container.querySelectorAll('.char-btn');
+  btns.forEach(btn => {
+    const isSelected = btn.dataset.id === selectedCharacter.id;
+    btn.classList.toggle('selected', isSelected);
+    btn.style.border = isSelected ? '3px solid #fff' : '3px solid transparent';
+  });
+}
+
+function attachCharacterListeners() {
+  const container = document.getElementById('charSelector');
+  if (!container) return;
+  container.querySelectorAll('.char-btn').forEach(btn => {
+    btn.onclick = () => selectCharacter(btn.dataset.id);
+  });
 }
 
 function updateMuteButton() {
@@ -222,9 +283,10 @@ function resetGame() {
   speed = PIPE_SPEED_BASE;
   distanceSinceLastPipe = 0;  explosionParticles = [];  overlayTitle.textContent = 'FLAPPY BIRD';
   overlaySubtitle.textContent = 'Tap or press Space / Arrow Up';
-  overlayStats.innerHTML = `<p>Best score: ${bestScore}</p>`;
+  overlayStats.innerHTML = `<p>Best score: ${bestScore}</p>${renderCharacterSelector()}`;
   restartButton.textContent = 'TAP TO START';
   renderLeaderboard();
+  attachCharacterListeners();
   overlay.classList.remove('hidden');
   scoreDisplay.textContent = '0';
 }
@@ -450,36 +512,37 @@ function drawPipes() {
 }
 
 function drawBird() {
+  const c = selectedCharacter.colors;
   ctx.save();
   ctx.translate(bird.x, bird.y);
   ctx.rotate(bird.angle);
   
   // Main body - large circle
-  ctx.fillStyle = '#f5d84f';
+  ctx.fillStyle = c.body;
   ctx.beginPath();
   ctx.arc(0, 0, 9, 0, Math.PI * 2);
   ctx.fill();
   
   // Head - medium circle
-  ctx.fillStyle = '#f5d84f';
+  ctx.fillStyle = c.head;
   ctx.beginPath();
   ctx.arc(0, -8, 5.5, 0, Math.PI * 2);
   ctx.fill();
   
   // Wing - circle overlay
-  ctx.fillStyle = '#e8c23f';
+  ctx.fillStyle = c.wing;
   ctx.beginPath();
   ctx.arc(-6, 0, 6, 0, Math.PI * 2);
   ctx.fill();
   
   // Tail - small circle
-  ctx.fillStyle = '#d4a835';
+  ctx.fillStyle = c.tail;
   ctx.beginPath();
   ctx.arc(-10, 0, 4, 0, Math.PI * 2);
   ctx.fill();
   
   // Beak - triangle but more rounded
-  ctx.fillStyle = '#ffb042';
+  ctx.fillStyle = c.beak;
   ctx.beginPath();
   ctx.moveTo(8, -4);
   ctx.quadraticCurveTo(14, 0, 8, 4);
