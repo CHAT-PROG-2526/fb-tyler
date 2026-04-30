@@ -458,7 +458,12 @@ function checkCollision() {
 function draw() {
   ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-  ctx.fillStyle = '#70c5ce';
+  // Gradient sky
+  const skyGradient = ctx.createLinearGradient(0, 0, 0, GAME_HEIGHT);
+  skyGradient.addColorStop(0, '#87CEEB');
+  skyGradient.addColorStop(0.5, '#70c5ce');
+  skyGradient.addColorStop(1, '#98D8E8');
+  ctx.fillStyle = skyGradient;
   ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
   drawBackground();
@@ -482,32 +487,101 @@ function draw() {
 }
 
 function drawBackground() {
+  // Clouds
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  drawCloud(40, 80, 0.8);
+  drawCloud(120, 50, 0.6);
+  drawCloud(200, 90, 0.7);
+  drawCloud(280, 60, 0.5);
+  
+  // Distant hills
+  ctx.fillStyle = '#5D8A9E';
+  ctx.beginPath();
+  ctx.moveTo(0, GAME_HEIGHT - GROUND_HEIGHT);
+  ctx.quadraticCurveTo(60, GAME_HEIGHT - GROUND_HEIGHT - 40, 120, GAME_HEIGHT - GROUND_HEIGHT - 20);
+  ctx.quadraticCurveTo(180, GAME_HEIGHT - GROUND_HEIGHT - 50, 240, GAME_HEIGHT - GROUND_HEIGHT - 30);
+  ctx.quadraticCurveTo(300, GAME_HEIGHT - GROUND_HEIGHT - 45, 360, GAME_HEIGHT - GROUND_HEIGHT);
+  ctx.lineTo(360, GAME_HEIGHT - GROUND_HEIGHT);
+  ctx.lineTo(0, GAME_HEIGHT - GROUND_HEIGHT);
+  ctx.fill();
+  
+  // Cloud shadows on ground
   for (let x = 0; x < GAME_WIDTH; x += 48) {
     ctx.fillStyle = 'rgba(255,255,255,0.14)';
     ctx.fillRect(x, GAME_HEIGHT - GROUND_HEIGHT - 16, 24, 8);
   }
 }
 
+function drawCloud(x, y, scale) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(scale, scale);
+  ctx.beginPath();
+  ctx.arc(0, 0, 20, 0, Math.PI * 2);
+  ctx.arc(15, -5, 15, 0, Math.PI * 2);
+  ctx.arc(30, 0, 18, 0, Math.PI * 2);
+  ctx.arc(12, 8, 12, 0, Math.PI * 2);
+  ctx.arc(25, 10, 14, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
 function drawGround() {
-  ctx.fillStyle = '#cea741';
+  // Ground base with gradient
+  const groundGradient = ctx.createLinearGradient(0, GAME_HEIGHT - GROUND_HEIGHT, 0, GAME_HEIGHT);
+  groundGradient.addColorStop(0, '#d2b04c');
+  groundGradient.addColorStop(0.3, '#cea741');
+  groundGradient.addColorStop(1, '#a88632');
+  ctx.fillStyle = groundGradient;
   ctx.fillRect(0, GAME_HEIGHT - GROUND_HEIGHT, GAME_WIDTH, GROUND_HEIGHT);
-  ctx.fillStyle = '#d2b04c';
+  
+  // Ground texture lines
+  ctx.fillStyle = '#b8953d';
   for (let x = 0; x < GAME_WIDTH; x += 16) {
     ctx.fillRect(x, GAME_HEIGHT - GROUND_HEIGHT + 24, 14, 10);
   }
+  
+  // Ground top edge highlight
+  ctx.fillStyle = '#e8c76a';
+  ctx.fillRect(0, GAME_HEIGHT - GROUND_HEIGHT, GAME_WIDTH, 4);
+  
+  // Ground bottom shadow
+  ctx.fillStyle = '#8a6a28';
+  ctx.fillRect(0, GAME_HEIGHT - 20, GAME_WIDTH, 20);
 }
 
 function drawPipes() {
   for (const pipe of pipes) {
-    ctx.fillStyle = '#299b3b';
+    // Pipe body with gradient for 3D effect
+    const pipeGradientLeft = ctx.createLinearGradient(pipe.x, 0, pipe.x + PIPE_WIDTH, 0);
+    pipeGradientLeft.addColorStop(0, '#1e7a2e');
+    pipeGradientLeft.addColorStop(0.3, '#299b3b');
+    pipeGradientLeft.addColorStop(0.7, '#299b3b');
+    pipeGradientLeft.addColorStop(1, '#166b1f');
+    
+    ctx.fillStyle = pipeGradientLeft;
     ctx.fillRect(pipe.x, 0, PIPE_WIDTH, pipe.gapY1);
     ctx.fillRect(pipe.x, pipe.gapY1 + PIPE_GAP, PIPE_WIDTH, pipe.gapY2 - (pipe.gapY1 + PIPE_GAP));
     ctx.fillRect(pipe.x, pipe.gapY2 + PIPE_GAP, PIPE_WIDTH, GAME_HEIGHT - GROUND_HEIGHT - pipe.gapY2 - PIPE_GAP);
-    ctx.fillStyle = '#196b23';
+    
+    // Pipe caps with 3D highlight
+    const capGradientTop = ctx.createLinearGradient(pipe.x - 2, pipe.gapY1 - 10, pipe.x + PIPE_WIDTH + 2, pipe.gapY1);
+    capGradientTop.addColorStop(0, '#166b1f');
+    capGradientTop.addColorStop(0.5, '#2da843');
+    capGradientTop.addColorStop(1, '#1e7a2e');
+    
+    ctx.fillStyle = capGradientTop;
     ctx.fillRect(pipe.x - 2, pipe.gapY1 - 10, PIPE_WIDTH + 4, 10);
     ctx.fillRect(pipe.x - 2, pipe.gapY1 + PIPE_GAP, PIPE_WIDTH + 4, 10);
     ctx.fillRect(pipe.x - 2, pipe.gapY2 - 10, PIPE_WIDTH + 4, 10);
     ctx.fillRect(pipe.x - 2, pipe.gapY2 + PIPE_GAP, PIPE_WIDTH + 4, 10);
+    
+    // Pipe edge highlights
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.fillRect(pipe.x, pipe.gapY1 - 10, 3, 10);
+    ctx.fillRect(pipe.x, pipe.gapY1 + PIPE_GAP, 3, 10);
+    ctx.fillRect(pipe.x, pipe.gapY2 - 10, 3, 10);
+    ctx.fillRect(pipe.x, pipe.gapY2 + PIPE_GAP, 3, 10);
   }
 }
 
@@ -517,45 +591,79 @@ function drawBird() {
   ctx.translate(bird.x, bird.y);
   ctx.rotate(bird.angle);
   
-  // Main body - large circle
-  ctx.fillStyle = c.body;
+  // Body shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.beginPath();
+  ctx.arc(2, 2, 9, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Main body with gradient
+  const bodyGradient = ctx.createRadialGradient(-2, -2, 0, 0, 0, 9);
+  bodyGradient.addColorStop(0, c.body);
+  bodyGradient.addColorStop(1, shadeColor(c.body, -20));
+  ctx.fillStyle = bodyGradient;
   ctx.beginPath();
   ctx.arc(0, 0, 9, 0, Math.PI * 2);
   ctx.fill();
   
-  // Head - medium circle
-  ctx.fillStyle = c.head;
+  // Head
+  const headGradient = ctx.createRadialGradient(-2, -10, 0, 0, -8, 5.5);
+  headGradient.addColorStop(0, c.head);
+  headGradient.addColorStop(1, shadeColor(c.head, -20));
+  ctx.fillStyle = headGradient;
   ctx.beginPath();
   ctx.arc(0, -8, 5.5, 0, Math.PI * 2);
   ctx.fill();
   
-  // Wing - circle overlay
-  ctx.fillStyle = c.wing;
+  // Wing with gradient
+  const wingGradient = ctx.createRadialGradient(-8, 0, 0, -6, 0, 6);
+  wingGradient.addColorStop(0, c.wing);
+  wingGradient.addColorStop(1, shadeColor(c.wing, -15));
+  ctx.fillStyle = wingGradient;
   ctx.beginPath();
   ctx.arc(-6, 0, 6, 0, Math.PI * 2);
   ctx.fill();
   
-  // Tail - small circle
-  ctx.fillStyle = c.tail;
+  // Wing feather detail
+  ctx.strokeStyle = shadeColor(c.wing, -25);
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(-10, -2);
+  ctx.quadraticCurveTo(-6, 0, -2, -1);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(-9, 2);
+  ctx.quadraticCurveTo(-5, 2, -2, 1);
+  ctx.stroke();
+  
+  // Tail
+  const tailGradient = ctx.createLinearGradient(-14, 0, -6, 0);
+  tailGradient.addColorStop(0, shadeColor(c.tail, -10));
+  tailGradient.addColorStop(1, c.tail);
+  ctx.fillStyle = tailGradient;
   ctx.beginPath();
   ctx.arc(-10, 0, 4, 0, Math.PI * 2);
   ctx.fill();
   
-  // Beak - triangle but more rounded
-  ctx.fillStyle = c.beak;
+  // Beak with gradient
+  const beakGradient = ctx.createLinearGradient(6, -4, 14, 4);
+  beakGradient.addColorStop(0, shadeColor(c.beak, -10));
+  beakGradient.addColorStop(0.5, c.beak);
+  beakGradient.addColorStop(1, shadeColor(c.beak, 10));
+  ctx.fillStyle = beakGradient;
   ctx.beginPath();
   ctx.moveTo(8, -4);
   ctx.quadraticCurveTo(14, 0, 8, 4);
   ctx.quadraticCurveTo(10, 0, 8, -4);
   ctx.fill();
   
-  // Eye white - circle
+  // Eye white
   ctx.fillStyle = '#fff';
   ctx.beginPath();
   ctx.arc(2, -7, 3, 0, Math.PI * 2);
   ctx.fill();
   
-  // Pupil - small circle
+  // Pupil
   ctx.fillStyle = '#222';
   ctx.beginPath();
   ctx.arc(3, -7, 1.5, 0, Math.PI * 2);
@@ -566,8 +674,18 @@ function drawBird() {
   ctx.beginPath();
   ctx.arc(4, -8, 0.75, 0, Math.PI * 2);
   ctx.fill();
-  
+
   ctx.restore();
+}
+
+// Helper to darken/lighten colors
+function shadeColor(color, percent) {
+  const num = parseInt(color.replace('#', ''), 16);
+  const amt = Math.round(2.55 * percent);
+  const R = (num >> 16) + amt;
+  const G = (num >> 8 & 0x00FF) + amt;
+  const B = (num & 0x0000FF) + amt;
+  return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
 }
 
 function drawTitleHint() {
