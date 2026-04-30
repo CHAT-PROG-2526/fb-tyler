@@ -1,6 +1,7 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const muteButton = document.getElementById('muteButton');
+const fullscreenButton = document.getElementById('fullscreenButton');
 const overlay = document.getElementById('overlay');
 const overlayTitle = document.getElementById('overlayTitle');
 const overlaySubtitle = document.getElementById('overlaySubtitle');
@@ -21,6 +22,7 @@ const FLAP_VELOCITY = -7.0;
 const MAX_DROP_SPEED = 12;
 const STORAGE_KEY = 'flappyLeaderboard';
 const MUTE_KEY = 'flappyMute';
+const APP_VERSION = '1.0.0';
 
 const gameState = {
   TITLE: 'TITLE',
@@ -43,6 +45,9 @@ let isMuted = false;
 let musicNode = null;
 let audioContext = null;
 let audioInitialized = false;
+
+// Version tracking - available in console via `APP_VERSION`
+console.log(`%c Flappy Bird v${APP_VERSION}`, 'color: #666; font-style: italic;');
 
 function resizeCanvas() {
   const ratio = GAME_WIDTH / GAME_HEIGHT;
@@ -544,6 +549,18 @@ function handleInput(event) {
 muteButton.addEventListener('click', () => {
   setMute(!isMuted);
 });
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.getElementById('game-shell').requestFullscreen().catch(err => {
+      console.log('Fullscreen error:', err);
+    });
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+fullscreenButton.addEventListener('click', toggleFullscreen);
 overlay.addEventListener('pointerdown', (event) => {
   if (event.target === overlay) {
     handleInput(event);
