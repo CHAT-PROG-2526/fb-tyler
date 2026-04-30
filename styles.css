@@ -82,36 +82,38 @@ canvas {
   letter-spacing: 0.1em;
 }
 #muteButton {
-  border: 2px solid rgba(255, 255, 255, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.9);
   border-radius: 8px;
-  width: 44px;
-  height: 44px;
-  background: rgba(0, 0, 0, 0.6);
+  width: 48px;
+  height: 48px;
+  background: rgba(0, 0, 0, 0.75);
   color: #fff;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  transition: transform 0.15s ease, background 0.15s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 #muteButton:hover {
-  background: rgba(0, 0, 0, 0.8);
-  transform: scale(1.05);
+  background: rgba(0, 0, 0, 0.9);
+  transform: scale(1.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
 }
 #fullscreenButton {
-  border: 2px solid rgba(255, 255, 255, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.9);
   border-radius: 8px;
-  width: 44px;
-  height: 44px;
-  background: rgba(0, 0, 0, 0.6);
+  width: 48px;
+  height: 48px;
+  background: rgba(0, 0, 0, 0.75);
   color: #fff;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  transition: transform 0.15s ease, background 0.15s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 #fullscreenButton:hover {
-  background: rgba(0, 0, 0, 0.8);
-  transform: scale(1.05);
+  background: rgba(0, 0, 0, 0.9);
+  transform: scale(1.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
 }
 #muteButton:focus {
   outline: 2px solid #fff;
