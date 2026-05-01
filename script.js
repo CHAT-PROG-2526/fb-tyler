@@ -244,25 +244,41 @@ function createSound(type) {
 function startBackgroundMusic() {
   if (!audioContext || isMuted) return;
   stopBackgroundMusic();
+  
+  // Main oscillator - energetic square wave
   musicNode = audioContext.createOscillator();
   const musicGain = audioContext.createGain();
   musicNode.connect(musicGain);
   musicGain.connect(audioContext.destination);
-  musicNode.type = 'triangle';
-  musicNode.frequency.setValueAtTime(220, audioContext.currentTime);
-  musicGain.gain.setValueAtTime(0.08, audioContext.currentTime);
+  musicNode.type = 'square';
+  musicNode.frequency.setValueAtTime(330, audioContext.currentTime);
+  musicGain.gain.setValueAtTime(0.06, audioContext.currentTime);
   musicNode.start();
+  
+  // Second oscillator for harmony
+  const musicNode2 = audioContext.createOscillator();
+  const musicGain2 = audioContext.createGain();
+  musicNode2.connect(musicGain2);
+  musicGain2.connect(audioContext.destination);
+  musicNode2.type = 'square';
+  musicNode2.frequency.setValueAtTime(165, audioContext.currentTime);
+  musicGain2.gain.setValueAtTime(0.04, audioContext.currentTime);
+  musicNode2.start();
+  
   let step = 0;
-  const sequence = [220, 247, 262, 294, 330, 294, 262, 247];
+  // Upbeat sequence - higher energy notes
+  const sequence = [330, 392, 440, 494, 523, 494, 440, 392];
   const interval = setInterval(() => {
     if (!musicNode) {
       clearInterval(interval);
       return;
     }
-    musicNode.frequency.linearRampToValueAtTime(sequence[step % sequence.length], audioContext.currentTime + 0.1);
+    musicNode.frequency.linearRampToValueAtTime(sequence[step % sequence.length], audioContext.currentTime + 0.08);
+    musicNode2.frequency.linearRampToValueAtTime(sequence[step % sequence.length] / 2, audioContext.currentTime + 0.08);
     step += 1;
-  }, 420);
+  }, 200); // Faster tempo
   musicNode._intervalId = interval;
+  musicNode._secondOsc = musicNode2;
 }
 
 function stopBackgroundMusic() {
@@ -272,6 +288,13 @@ function stopBackgroundMusic() {
     musicNode.stop();
   } catch (err) {
     // ignore already stopped
+  }
+  if (musicNode._secondOsc) {
+    try {
+      musicNode._secondOsc.stop();
+    } catch (err) {
+      // ignore
+    }
   }
   musicNode = null;
 }
