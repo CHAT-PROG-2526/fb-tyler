@@ -538,13 +538,15 @@ function drawBackground() {
     ctx.fillStyle = buildingColors[b.color];
     ctx.fillRect(b.x, baseY - b.h, b.w, b.h);
     
-    // Windows
+    // Windows - use deterministic pattern based on position
     ctx.fillStyle = 'rgba(255, 255, 150, 0.6)';
     const windowRows = Math.floor(b.h / 16);
     const windowCols = Math.floor(b.w / 12);
     for (let row = 0; row < windowRows; row++) {
       for (let col = 0; col < windowCols; col++) {
-        if (Math.random() > 0.3) {
+        // Use building position and window position to create consistent pattern
+        const isLit = ((b.x + row + col) % 3) !== 0;
+        if (isLit) {
           ctx.fillRect(b.x + 4 + col * 12, baseY - b.h + 8 + row * 16, 6, 8);
         }
       }
