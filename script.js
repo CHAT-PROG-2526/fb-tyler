@@ -53,6 +53,7 @@ let lastFrameTime = 0;
 let bird = { x: 72, y: GAME_HEIGHT / 2, vy: 0, radius: 18, angle: 0 };
 let pipes = [];
 let score = 0;
+let level = 1;
 let bestScore = 0;
 let leaderboard = [];
 let speed = PIPE_SPEED_BASE;
@@ -287,6 +288,7 @@ function resetGame() {
   bird = { x: 72, y: GAME_HEIGHT / 2, vy: 0, radius: 10, angle: 0 };
   pipes = [];
   score = 0;
+  level = 1;
   speed = PIPE_SPEED_BASE;
   distanceSinceLastPipe = 0;  explosionParticles = [];  overlayTitle.textContent = 'FLAPPY BIRD';
   overlaySubtitle.textContent = 'Tap or press Space / Arrow Up';
@@ -422,6 +424,10 @@ function update(delta) {
       createSound('point');
       speed = PIPE_SPEED_BASE + score * SPEED_INCREMENT;
       scoreDisplay.textContent = String(score);
+      // Check for level 2 at 30 points
+      if (score >= 30) {
+        level = 2;
+      }
     }
   }
 
@@ -465,11 +471,20 @@ function checkCollision() {
 function draw() {
   ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-  // Gradient sky
+  // Gradient sky - changes based on level
   const skyGradient = ctx.createLinearGradient(0, 0, 0, GAME_HEIGHT);
-  skyGradient.addColorStop(0, '#87CEEB');
-  skyGradient.addColorStop(0.5, '#70c5ce');
-  skyGradient.addColorStop(1, '#98D8E8');
+  if (level >= 2) {
+    // Red sunset sky for level 2+
+    skyGradient.addColorStop(0, '#ff6b6b');
+    skyGradient.addColorStop(0.3, '#ee5a24');
+    skyGradient.addColorStop(0.6, '#d63031');
+    skyGradient.addColorStop(1, '#8c1a1a');
+  } else {
+    // Normal blue sky
+    skyGradient.addColorStop(0, '#87CEEB');
+    skyGradient.addColorStop(0.5, '#70c5ce');
+    skyGradient.addColorStop(1, '#98D8E8');
+  }
   ctx.fillStyle = skyGradient;
   ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
