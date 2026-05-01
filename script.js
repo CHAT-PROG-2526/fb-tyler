@@ -424,8 +424,10 @@ function update(delta) {
       createSound('point');
       speed = PIPE_SPEED_BASE + score * SPEED_INCREMENT;
       scoreDisplay.textContent = String(score);
-      // Check for level 2 at 30 points
+      // Check for level 2 at 20 points, level 3 at 30 points
       if (score >= 30) {
+        level = 3;
+      } else if (score >= 20) {
         level = 2;
       }
     }
@@ -473,12 +475,18 @@ function draw() {
 
   // Gradient sky - changes based on level
   const skyGradient = ctx.createLinearGradient(0, 0, 0, GAME_HEIGHT);
-  if (level >= 2) {
-    // Red sunset sky for level 2+
+  if (level >= 3) {
+    // Red sunset sky for level 3+
     skyGradient.addColorStop(0, '#ff6b6b');
     skyGradient.addColorStop(0.3, '#ee5a24');
     skyGradient.addColorStop(0.6, '#d63031');
     skyGradient.addColorStop(1, '#8c1a1a');
+  } else if (level >= 2) {
+    // Green sky for level 2
+    skyGradient.addColorStop(0, '#55efc4');
+    skyGradient.addColorStop(0.3, '#00b894');
+    skyGradient.addColorStop(0.6, '#00a383');
+    skyGradient.addColorStop(1, '#00684d');
   } else {
     // Normal blue sky
     skyGradient.addColorStop(0, '#87CEEB');
