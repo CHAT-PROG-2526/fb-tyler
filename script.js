@@ -518,23 +518,51 @@ function draw() {
 }
 
 function drawBackground() {
-  // Clouds
-  ctx.fillStyle = 'rgba(255,255,255,0.7)';
-  drawCloud(40, 80, 0.8);
-  drawCloud(120, 50, 0.6);
-  drawCloud(200, 90, 0.7);
-  drawCloud(280, 60, 0.5);
+  // City skyline - far buildings
+  const buildingColors = ['#2d3436', '#636e72', '#4a5568', '#5a6577', '#3d4852'];
+  const buildings = [
+    { x: -20, w: 40, h: 120, color: 0 },
+    { x: 10, w: 30, h: 90, color: 1 },
+    { x: 35, w: 50, h: 140, color: 2 },
+    { x: 75, w: 35, h: 100, color: 3 },
+    { x: 105, w: 45, h: 130, color: 4 },
+    { x: 140, w: 55, h: 150, color: 0 },
+    { x: 185, w: 30, h: 85, color: 1 },
+    { x: 210, w: 40, h: 115, color: 2 },
+    { x: 245, w: 50, h: 135, color: 3 },
+    { x: 290, w: 35, h: 95, color: 4 },
+  ];
   
-  // Distant hills
-  ctx.fillStyle = '#5D8A9E';
-  ctx.beginPath();
-  ctx.moveTo(0, GAME_HEIGHT - GROUND_HEIGHT);
-  ctx.quadraticCurveTo(60, GAME_HEIGHT - GROUND_HEIGHT - 40, 120, GAME_HEIGHT - GROUND_HEIGHT - 20);
-  ctx.quadraticCurveTo(180, GAME_HEIGHT - GROUND_HEIGHT - 50, 240, GAME_HEIGHT - GROUND_HEIGHT - 30);
-  ctx.quadraticCurveTo(300, GAME_HEIGHT - GROUND_HEIGHT - 45, 360, GAME_HEIGHT - GROUND_HEIGHT);
-  ctx.lineTo(360, GAME_HEIGHT - GROUND_HEIGHT);
-  ctx.lineTo(0, GAME_HEIGHT - GROUND_HEIGHT);
-  ctx.fill();
+  const baseY = GAME_HEIGHT - GROUND_HEIGHT;
+  for (const b of buildings) {
+    ctx.fillStyle = buildingColors[b.color];
+    ctx.fillRect(b.x, baseY - b.h, b.w, b.h);
+    
+    // Windows
+    ctx.fillStyle = 'rgba(255, 255, 150, 0.6)';
+    const windowRows = Math.floor(b.h / 16);
+    const windowCols = Math.floor(b.w / 12);
+    for (let row = 0; row < windowRows; row++) {
+      for (let col = 0; col < windowCols; col++) {
+        if (Math.random() > 0.3) {
+          ctx.fillRect(b.x + 4 + col * 12, baseY - b.h + 8 + row * 16, 6, 8);
+        }
+      }
+    }
+  }
+  
+  // Closer buildings (darker silhouette)
+  const nearBuildings = [
+    { x: -10, w: 35, h: 80 },
+    { x: 60, w: 45, h: 100 },
+    { x: 130, w: 40, h: 70 },
+    { x: 200, w: 50, h: 90 },
+    { x: 270, w: 30, h: 60 },
+  ];
+  ctx.fillStyle = '#1a1a2e';
+  for (const b of nearBuildings) {
+    ctx.fillRect(b.x, baseY - b.h, b.w, b.h);
+  }
   
   // Cloud shadows on ground
   for (let x = 0; x < GAME_WIDTH; x += 48) {
