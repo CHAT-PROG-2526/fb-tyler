@@ -37,6 +37,12 @@ const CHARACTERS = [
   { id: 'bluebird', name: 'Bluebird', colors: { body: '#3498db', head: '#3498db', wing: '#2980b9', tail: '#1abc9c', beak: '#2c3e50' } },
   { id: 'cardinal', name: 'Cardinal', colors: { body: '#c0392b', head: '#c0392b', wing: '#922b21', tail: '#7b241c', beak: '#d35400' } },
   { id: 'goldfinch', name: 'Goldfinch', colors: { body: '#f1c40f', head: '#f1c40f', wing: '#f39c12', tail: '#f1c40f', beak: '#7f8c8d' } },
+  { id: 'robin', name: 'Robin', colors: { body: '#e74c3c', head: '#e74c3c', wing: '#2c3e50', tail: '#1a252f', beak: '#f1c40f' } },
+  { id: 'jay', name: 'Jay', colors: { body: '#3498db', head: '#fff', wing: '#2980b9', tail: '#1abc9c', beak: '#000' } },
+  { id: 'finch', name: 'Finch', colors: { body: '#e67e22', head: '#e67e22', wing: '#d35400', tail: '#a04000', beak: '#95a5a6' } },
+  { id: 'wren', name: 'Wren', colors: { body: '#8b4513', head: '#8b4513', wing: '#654321', tail: '#4a300d', beak: '#2c1810' } },
+  { id: 'swan', name: 'Swan', colors: { body: '#fff', head: '#fff', wing: '#ecf0f1', tail: '#bdc3c7', beak: '#e74c3c' } },
+  { id: 'peacock', name: 'Peacock', colors: { body: '#27ae60', head: '#27ae60', wing: '#2980b9', tail: '#9b59b6', beak: '#f39c12' } },
 ];
 
 const CHARACTER_KEY = 'flappyCharacter';
@@ -424,14 +430,8 @@ function update(delta) {
       createSound('point');
       speed = PIPE_SPEED_BASE + score * SPEED_INCREMENT;
       scoreDisplay.textContent = String(score);
-      // Check for level thresholds
-      if (score >= 30) {
-        level = 4;
-      } else if (score >= 20) {
-        level = 3;
-      } else if (score >= 10) {
-        level = 2;
-      }
+      // Level changes every 10 points
+      level = Math.min(Math.floor(score / 10) + 1, 10);
     }
   }
 
@@ -475,32 +475,25 @@ function checkCollision() {
 function draw() {
   ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-  // Gradient sky - changes based on level
+  // Gradient sky - changes every 10 points
   const skyGradient = ctx.createLinearGradient(0, 0, 0, GAME_HEIGHT);
-  if (level >= 4) {
-    // Red sunset sky for level 4+
-    skyGradient.addColorStop(0, '#ff6b6b');
-    skyGradient.addColorStop(0.3, '#ee5a24');
-    skyGradient.addColorStop(0.6, '#d63031');
-    skyGradient.addColorStop(1, '#8c1a1a');
-  } else if (level >= 3) {
-    // Green sky for level 3
-    skyGradient.addColorStop(0, '#55efc4');
-    skyGradient.addColorStop(0.3, '#00b894');
-    skyGradient.addColorStop(0.6, '#00a383');
-    skyGradient.addColorStop(1, '#00684d');
-  } else if (level >= 2) {
-    // Purple sky for level 2
-    skyGradient.addColorStop(0, '#a29bfe');
-    skyGradient.addColorStop(0.3, '#6c5ce7');
-    skyGradient.addColorStop(0.6, '#5541d7');
-    skyGradient.addColorStop(1, '#2c2150');
-  } else {
-    // Normal blue sky
-    skyGradient.addColorStop(0, '#87CEEB');
-    skyGradient.addColorStop(0.5, '#70c5ce');
-    skyGradient.addColorStop(1, '#98D8E8');
-  }
+  const skyColors = {
+    1: ['#87CEEB', '#70c5ce', '#70c5ce', '#98D8E8'], // Blue
+    2: ['#a29bfe', '#6c5ce7', '#6c5ce7', '#2c2150'], // Purple
+    3: ['#55efc4', '#00b894', '#00a383', '#00684d'], // Green
+    4: ['#ff6b6b', '#ee5a24', '#d63031', '#8c1a1a'], // Red
+    5: ['#fd79a8', '#e84393', '#d63384', '#a32b5e'], // Pink
+    6: ['#ffeaa7', '#fdcb6e', '#f39c12', '#d68910'], // Orange
+    7: ['#81ecec', '#00cec9', '#00b5a8', '#008b8b'], // Cyan
+    8: ['#dfe6e9', '#b2bec3', '#636e72', '#2d3436'], // Gray
+    9: ['#55efc4', '#00b894', '#0984e3', '#2c2150'], // Teal
+    10: ['#ff7675', '#d63031', '#e17055', '#6c1a1a'], // Dark Red
+  };
+  const colors = skyColors[level] || skyColors[10];
+  skyGradient.addColorStop(0, colors[0]);
+  skyGradient.addColorStop(0.33, colors[1]);
+  skyGradient.addColorStop(0.66, colors[2]);
+  skyGradient.addColorStop(1, colors[3]);
   ctx.fillStyle = skyGradient;
   ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
